@@ -4,9 +4,7 @@ from phi.agent import Agent
 from phi.model.google import Gemini
 from phi.tools.firecrawl import FirecrawlTools
 import google.generativeai as genai
-import io
 import os
-import tempfile
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -31,11 +29,10 @@ st.set_page_config(
 st.title("AI Shopping Partner")
 st.header("Powered by Agno and Google Gemini")
 
-def get_gemini_response(api_key, prompt, image_path):
+def get_gemini_response(api_key, prompt, image):
+    """Get response from Gemini using the image object directly."""
     model = genai.GenerativeModel(model_name="gemini-2.0-flash-exp")
-    with open(image_path, "rb") as img_file:
-        image_bytes = img_file.read()
-    response = model.generate_content([prompt, image_bytes])
+    response = model.generate_content([prompt, image])
     return response.text
 
 def initialize_agent():
@@ -64,21 +61,19 @@ image_file = st.file_uploader("Upload an image file to analyze and provide relev
 prompt = "What is in this photo?"
 if image_file is not None:
     try:
+        # Open the uploaded image
         image = Image.open(image_file)
         st.image(image, caption="Uploaded Image", use_container_width=False, width=400)
         
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as temp_file:
-            image.save(temp_file.name)
-            temp_image_path = temp_file.name
-        
+        # Get Gemini response using the image object directly
         with st.spinner("AI is processing this image and gathering insights..."):
-            response = get_gemini_response(API_KEY, prompt, temp_image_path)
+            response = get_gemini_response(API_KEY, prompt, image)
             st.write(f"Product Identified using AI: {response}")
         
-        os.remove(temp_image_path)
     except Exception as e:
-        st.error(f"Error: Unable to open image. {e}")
+        st.error(f"Error: Unable to process image. {e}")
     
+    # User preferences
     promptColor = st.text_input("What color are you looking for?", key="inputcolor")
     promptPurpose = st.text_input("For what purpose are you looking for this product?", key="inputpurpose")
     promptBudget = st.text_input("What is your budget?", key="inputbudget")
@@ -93,10 +88,7 @@ if image_file is not None:
             st.warning("Please enter a query to analyze this image")
         else:
             try:
-                with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as temp_file:
-                    image.save(temp_file.name)
-                    temp_image_path = temp_file.name
-                
+                # Run the multimodal agent with the image object
                 with st.spinner("AI is processing this image and gathering insights..."):
                     analysis_prompt = f"""
                     I am looking for {response} with the following preferences:
@@ -107,11 +99,11 @@ if image_file is not None:
                     {user_query}
                     """
                     
-                    response = multimodal_Agent.run(analysis_prompt, image=temp_image_path)
+                    # Pass the image object directly to the agent
+                    response = multimodal_Agent.run(analysis_prompt, image=image)
                 
                 st.subheader("Relevant search links for the product")
                 st.markdown(response.content)
-                os.remove(temp_image_path)
             except Exception as error:
                 st.error(f"An error occurred during analysis: {error}")
     
