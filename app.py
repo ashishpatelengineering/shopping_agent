@@ -12,6 +12,8 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
+FIRECRAWL_API_KEY = os.getenv("FIRECRAWL_API_KEY")
+
 # Configure API Key
 API_KEY = os.getenv("GOOGLE_API_KEY")
 if API_KEY:
