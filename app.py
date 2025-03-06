@@ -12,7 +12,9 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
-FIRECRAWL_API_KEY = os.getenv("FIRECRAWL_API_KEY")
+# Load API keys from Streamlit Secrets
+FIRECRAWL_API_KEY = st.secrets["FIRECRAWL_API_KEY"]
+GOOGLE_API_KEY = st.secrets["GOOGLE_API_KEY"]
 
 # Configure API Key
 API_KEY = os.getenv("GOOGLE_API_KEY")
