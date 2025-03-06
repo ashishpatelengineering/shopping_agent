@@ -13,7 +13,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Load API keys from Streamlit Secrets
-FIRECRAWL_API_KEY = st.secrets["FIRCRAWL_API_KEY"]
+FIRCRAWL_API_KEY = st.secrets["FIRCRAWL_API_KEY"]
 GOOGLE_API_KEY = st.secrets["GOOGLE_API_KEY"]
 
 # Configure API Key
