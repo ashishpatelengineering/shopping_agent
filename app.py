@@ -49,7 +49,7 @@ def initialize_agent():
             "Clearly mention the key attributes of each product (e.g., price, brand, features) in the response.",
             "Format the recommendations neatly and ensure clarity for ease of user understanding.",
         ],
-        tools=[FirecrawlTools()],
+        tools=[FirecrawlTools(api_key=FIRECRAWL_API_KEY)],
         markdown=True
     )
 
